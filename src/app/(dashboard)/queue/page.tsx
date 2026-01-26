@@ -1,168 +1,36 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
-import { PrimaryActionButton } from "@/components/shared/primary-action-button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { queueService } from "@/lib/services/queue.service";
-import { QueueItem } from "@/types/queue";
-import { differenceInMinutes, formatDistanceToNow } from "date-fns";
+import { apiServer } from "@/lib/api/server";
+import { QueueResponse } from "@/types/queue";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { Suspense } from "react";
+import QueueClient from "./client";
 
-export default function QueuePage() {
-  const [queue, setQueue] = useState<QueueItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [assigning, setAssigning] = useState(false);
+async function getQueueData() {
+  try {
+    const res = await apiServer<QueueResponse>(
+      "/queue",
+      "GET",
+      undefined,
+      { cacheType: "no-store" }, // Queue data is highly dynamic
+    );
+    return res?.data;
+  } catch (error) {
+    console.error("Failed to fetch queue data:", error);
+    return undefined;
+  }
+}
 
-  const fetchQueue = async () => {
-    setLoading(true);
-    try {
-      const response = await queueService.getQueue();
-      if (response.success) {
-        setQueue(response.data);
-      }
-    } catch (error) {
-      toast.error("Failed to fetch queue");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchQueue();
-  }, []);
-
-  const handleAssign = async () => {
-    setAssigning(true);
-    try {
-      const response = await queueService.assignNext();
-      if (response.success) {
-        const customerName =
-          response.data.appointment?.customerName ||
-          response.data.queueItem?.appointment?.customerName ||
-          "Patient";
-        toast.success(`Assigned: ${customerName}`);
-        fetchQueue();
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to assign queue item");
-    } finally {
-      setAssigning(false);
-    }
-  };
-
-  const totalWaiting = queue.length;
-  const longestWait =
-    queue.length > 0
-      ? differenceInMinutes(new Date(), new Date(queue[0].queuedAt))
-      : 0;
+export default async function QueuePage() {
+  const queueData = await getQueueData();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Queue Management</h2>
-        <PrimaryActionButton
-          onClick={handleAssign}
-          disabled={assigning || queue.length === 0}
-        >
-          {assigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Assign From Queue
-        </PrimaryActionButton>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2 border-0 bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.25)]">
-          <CardHeader>
-            <CardTitle>Active Queue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">Position</TableHead>
-                  <TableHead>Patient</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Queued</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center">
-                      <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-                    </TableCell>
-                  </TableRow>
-                ) : queue.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="h-32 text-center text-muted-foreground"
-                    >
-                      No patients in queue
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  queue.map((item) => (
-                    <TableRow
-                      key={item.id}
-                      className="odd:bg-white/80 even:bg-primary/5"
-                    >
-                      <TableCell className="font-medium text-lg">
-                        #{item.position}
-                      </TableCell>
-                      <TableCell>
-                        {item.appointment.customerName || "Guest"}
-                      </TableCell>
-                      <TableCell>{item.appointment.service.name}</TableCell>
-                      <TableCell>
-                        {formatDistanceToNow(new Date(item.queuedAt), {
-                          addSuffix: true,
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className="bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 border-0">
-                          {item.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.25)]">
-          <CardHeader>
-            <CardTitle>Queue Stats</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-center p-4 rounded-lg bg-white/80">
-              <div className="text-sm text-muted-foreground">Longest Wait</div>
-              <div className="text-3xl font-bold text-slate-900">
-                {longestWait} min
-              </div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-white/80">
-              <div className="text-sm text-muted-foreground">Total Waiting</div>
-              <div className="text-3xl font-bold text-slate-900">
-                {totalWaiting}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex h-96 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
+      <QueueClient initialData={queueData} />
+    </Suspense>
   );
 }
