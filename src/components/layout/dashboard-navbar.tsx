@@ -7,7 +7,7 @@ export const DashboardNavbar = () => {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-20 w-full py-4 bg-white/60 backdrop-blur-md border-b border-white/40">
+    <header className="sticky top-0  w-full py-4  backdrop-blur-md border-b border-white/40">
       <div className="px-8 flex items-center justify-between">
         <div className="flex flex-col">
           <h2 className="text-lg font-semibold text-foreground">Overview</h2>

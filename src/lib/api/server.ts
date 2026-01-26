@@ -40,12 +40,15 @@ export async function apiServer<T = unknown>(
         ? "no-store"
         : "default";
 
-  const nextOptions =
-    typeof options?.revalidate === "number"
-      ? { revalidate: options.revalidate }
-      : options?.revalidate === false
-        ? { revalidate: 0 }
-        : undefined;
+  const nextOptions = {
+    revalidate:
+      typeof options?.revalidate === "number"
+        ? options.revalidate
+        : options?.revalidate === false
+          ? 0
+          : undefined,
+    tags: options?.tags,
+  };
 
   try {
     const response = await fetch(`${API_URL}${url}`, {
@@ -89,11 +92,17 @@ export async function apiServer<T = unknown>(
           .join("\n");
       } else if (typeof resultJson === "object" && resultJson !== null) {
         const obj = resultJson as Record<string, unknown>;
-        message =
-          (obj.detail as string) ||
-          (obj.message as string) ||
-          (obj.error as string) ||
-          JSON.stringify(obj);
+        
+        if (Array.isArray(obj.message)) {
+          message = obj.message.join("\n");
+        } else if (typeof obj.message === "string") {
+          message = obj.message;
+        } else {
+          message =
+            (obj.detail as string) ||
+            (obj.error as string) ||
+            JSON.stringify(obj);
+        }
       } else {
         message = String(resultJson);
       }

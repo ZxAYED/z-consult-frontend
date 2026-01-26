@@ -43,8 +43,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refreshUser();
-  }, [refreshUser]);
+    // Wrap in setTimeout to push to next tick and avoid synchronous setState warning
+    const timer = setTimeout(() => {
+      refreshUser();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array to run only on mount
 
   const logout = () => {
     deleteCookie("ac_T");

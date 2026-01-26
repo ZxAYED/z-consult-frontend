@@ -14,7 +14,7 @@ export async function apiClient<T = unknown>(
   url: string,
   method: string = "GET",
   data?: unknown,
-  // options?: ApiClientOptions 
+  options?: ApiClientOptions 
 ): Promise<T> {
   const isUrlEncoded = data instanceof URLSearchParams;
   const accessToken = getCookie("ac_T");
@@ -69,12 +69,17 @@ export async function apiClient<T = unknown>(
           .join("\n");
       } else if (typeof resultJson === "object" && resultJson !== null) {
         const obj = resultJson as Record<string, unknown>;
-        message =
-          (obj.detail as string) ||
-          (obj.message as string) ||
-          (obj.error as string) ||
-          JSON.stringify(obj);
-          console.log(message)
+        
+        if (Array.isArray(obj.message)) {
+          message = obj.message.join("\n");
+        } else if (typeof obj.message === "string") {
+          message = obj.message;
+        } else {
+          message =
+            (obj.detail as string) ||
+            (obj.error as string) ||
+            JSON.stringify(obj);
+        }
       } else {
         message = String(resultJson);
         console.log(message)

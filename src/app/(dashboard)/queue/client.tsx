@@ -4,6 +4,7 @@
 import { PrimaryActionButton } from "@/components/shared/primary-action-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -13,16 +14,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { queueService } from "@/lib/services/queue.service";
+import { handleApiError } from "@/lib/utils/error-handler";
 import { QueueItem } from "@/types/queue";
 import { differenceInMinutes, formatDistanceToNow } from "date-fns";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function QueuePage() {
-  const [queue, setQueue] = useState<QueueItem[]>([]);
-  const [loading, setLoading] = useState(true);
+interface QueueClientProps {
+  initialData?: QueueItem[];
+}
+
+export default function QueueClient({ initialData }: QueueClientProps) {
+  const [queue, setQueue] = useState<QueueItem[]>(initialData || []);
+  const [loading, setLoading] = useState(!initialData);
   const [assigning, setAssigning] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchQueue = async () => {
     setLoading(true);
@@ -31,14 +38,15 @@ export default function QueuePage() {
       if (response.success) {
         setQueue(response.data);
       }
-    } catch (error) {
-      toast.error("Failed to fetch queue");
+    } catch (error: any) {
+      handleApiError(error, "Failed to fetch queue");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    if (initialData) return;
     fetchQueue();
   }, []);
 
@@ -55,38 +63,67 @@ export default function QueuePage() {
         fetchQueue();
       }
     } catch (error: any) {
-      toast.error(error.message || "Failed to assign queue item");
+      handleApiError(error, "Failed to assign queue item");
     } finally {
       setAssigning(false);
     }
   };
 
   const totalWaiting = queue.length;
+
+  const filteredQueue = queue.filter(
+    (item) =>
+      (item.appointment.customerName || "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      item.appointment.service.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()),
+  );
+
+  const sortedQueue = [...filteredQueue].sort(
+    (a, b) => new Date(a.queuedAt).getTime() - new Date(b.queuedAt).getTime(),
+  );
+
   const longestWait =
-    queue.length > 0
-      ? differenceInMinutes(new Date(), new Date(queue[0].queuedAt))
+    sortedQueue.length > 0
+      ? differenceInMinutes(new Date(), new Date(sortedQueue[0].queuedAt))
       : 0;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Queue Management</h2>
-        <PrimaryActionButton
-          onClick={handleAssign}
-          disabled={assigning || queue.length === 0}
-        >
-          {assigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Assign From Queue
-        </PrimaryActionButton>
+        <div className="flex items-center space-x-2 w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search patient..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-10 w-full sm:w-[200px] rounded-xl border-border/60 bg-white/80 focus-visible:ring-1 focus-visible:ring-primary/20"
+            />
+          </div>
+          <PrimaryActionButton
+            onClick={handleAssign}
+            disabled={assigning || queue.length === 0}
+            className="w-full sm:w-auto whitespace-nowrap"
+          >
+            {assigning ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            Assign From Queue
+          </PrimaryActionButton>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2 border-0 bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.25)]">
+        <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>Active Queue</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table className="w-full border-none bg-white">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[100px]">Position</TableHead>
@@ -103,7 +140,7 @@ export default function QueuePage() {
                       <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
                     </TableCell>
                   </TableRow>
-                ) : queue.length === 0 ? (
+                ) : sortedQueue.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={5}
@@ -113,7 +150,7 @@ export default function QueuePage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  queue.map((item) => (
+                  sortedQueue.map((item) => (
                     <TableRow
                       key={item.id}
                       className="odd:bg-white/80 even:bg-primary/5"
@@ -143,18 +180,18 @@ export default function QueuePage() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.25)]">
+        <Card className="bg-white/50 border-muted focus:border-none focus:ring-none transition-all">
           <CardHeader>
             <CardTitle>Queue Stats</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-center p-4 rounded-lg bg-white/80">
+          <CardContent className="space-y-4 border-none">
+            <div className="text-center p-4 border rounded-lg bg-slate-50">
               <div className="text-sm text-muted-foreground">Longest Wait</div>
               <div className="text-3xl font-bold text-slate-900">
                 {longestWait} min
               </div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-white/80">
+            <div className="text-center p-4 border rounded-lg bg-slate-50">
               <div className="text-sm text-muted-foreground">Total Waiting</div>
               <div className="text-3xl font-bold text-slate-900">
                 {totalWaiting}

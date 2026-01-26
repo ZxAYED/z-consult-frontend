@@ -48,12 +48,12 @@ export function Sidebar() {
   const { logout } = useAuth();
 
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-white/60 border-r border-white/40 shadow-sm">
+    <div className="space-y-4 py-4 flex flex-col h-full  border-r border-white/40 shadow-sm">
       <div className="px-6 py-2 flex-1">
         <Link href="/dashboard" className="flex items-center mb-10">
           <Logo />
         </Link>
-        <div className="space-y-4 ">
+        <div className="space-y-4 pt-2">
           {routes.map((route) => (
             <Link
               key={route.href}
@@ -62,7 +62,7 @@ export function Sidebar() {
                 "group flex items-center p-3 w-full justify-start font-medium cursor-pointer rounded-xl transition-all duration-200 relative overflow-hidden",
                 pathname === route.href
                   ? "text-primary-foreground shadow-md"
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/50",
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/40",
               )}
             >
               {pathname === route.href && (
@@ -93,13 +93,15 @@ export function Sidebar() {
         </div>
       </div>
       <div className="px-6 py-2">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.8 }}
           onClick={logout}
-          className="flex items-center p-3 w-full justify-start font-medium cursor-pointer rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
+          className="flex items-center p-3 w-full justify-start font-medium cursor-pointer rounded-xl  text-destructive bg-destructive/10 transition-all duration-200"
         >
           <LogOut className="h-5 w-5 mr-3" />
           Logout
-        </button>
+        </motion.button>
       </div>
     </div>
   );

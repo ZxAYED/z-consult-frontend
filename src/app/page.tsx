@@ -34,11 +34,11 @@ export default function Home() {
                 transition={{ duration: 0.5 }}
               >
                 <GlassPanel
-                  className="p-7 lg:p-8 w-full shadow-[0_18px_50px_-30px_rgba(12,24,12,0.55)]"
+                  className="p-7 lg:p-8 w-full shadow-[0_18px_50px_-30px_rgba(12,24,12,0.55)] border-0"
                   variant="strong"
                 >
                   <div className="mb-6 space-y-3">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
                       <span className="h-2 w-2 rounded-full bg-primary" />
                       Clinic Ops Suite
                     </div>
@@ -54,7 +54,7 @@ export default function Home() {
                   </div>
 
                   <Tabs defaultValue="login" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-6 rounded-2xl bg-white/70 border border-white/70 p-1 shadow-sm">
+                    <TabsList className="grid w-full grid-cols-2 mb-6 rounded-2xl bg-white/70 p-1 shadow-sm">
                       <TabsTrigger
                         value="login"
                         className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all cursor-pointer font-medium text-muted-foreground data-[state=active]:text-foreground"
@@ -169,7 +169,7 @@ function FeatureCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -5 }}
-      className="group relative overflow-hidden p-6 rounded-2xl bg-white/70 border border-gray   grid place-items-center text-center cursor-default"
+      className="group relative overflow-hidden p-6 rounded-2xl bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.3)] grid place-items-center text-center cursor-default"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(132,204,22,0.15),transparent_60%)]  transition-opacity duration-300 opacity-100" />
       <div className="relative z-10 grid place-items-center text-center">

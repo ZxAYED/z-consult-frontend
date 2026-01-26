@@ -1,6 +1,6 @@
-'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import React from "react";
 import {
   FormControl,
   FormField,
@@ -56,9 +56,13 @@ export const SelectField = ({
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
-            <SelectContent className="rounded-xl">
+            <SelectContent className="rounded-xl border-none bg-white">
               {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem
+                  className="cursor-pointer"
+                  key={option.value}
+                  value={option.value}
+                >
                   {option.label}
                 </SelectItem>
               ))}
