@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cookies } from "next/headers";
 import "server-only";
 
@@ -47,7 +48,7 @@ export async function apiServer<T = unknown>(
         : options?.revalidate === false
           ? 0
           : undefined,
-    tags: options?.tags,
+    ...(options as any)?.tags ? { tags: (options as any).tags } : {},
   };
 
   try {
