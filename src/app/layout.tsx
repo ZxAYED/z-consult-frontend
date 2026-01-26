@@ -1,19 +1,12 @@
-import QueryProvider from "@/providers/query-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-});
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -29,9 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${manrope.variable} ${fraunces.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <QueryProvider>
+        <AuthProvider>
           {children}
           <Toaster
             richColors
@@ -53,7 +46,7 @@ export default function RootLayout({
               },
             }}
           />
-        </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );

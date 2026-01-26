@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
@@ -15,8 +14,6 @@ interface ButtonProps {
   className?: string;
   type?: "button" | "submit" | "reset";
 }
-
-const MotionButton = motion(Button);
 
 const buttonVariants = {
   tap: { scale: 0.98 },
@@ -33,7 +30,7 @@ export const PrimaryButton = ({
   type = "button",
 }: ButtonProps) => {
   return (
-    <MotionButton
+    <motion.button
       type={type}
       variants={buttonVariants}
       whileTap="tap"
@@ -41,14 +38,14 @@ export const PrimaryButton = ({
       onClick={onClick}
       disabled={disabled || loading}
       className={cn(
-        "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md transition-all px-6 py-3 cursor-pointer font-medium rounded-lg",
+        "bg-primary hover:bg-primary/90 text-white  shadow-sm hover:shadow-md transition-all px-6 cursor-pointer py-3 flex justify-center items-center font-medium rounded-lg",
         className,
       )}
     >
       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
       {!loading && icon && <span className="mr-2">{icon}</span>}
       {title}
-    </MotionButton>
+    </motion.button>
   );
 };
 
@@ -62,23 +59,22 @@ export const GhostButton = ({
   type = "button",
 }: ButtonProps) => {
   return (
-    <MotionButton
+    <motion.button
       type={type}
       variants={buttonVariants}
       whileTap="tap"
       whileHover={!disabled && !loading ? "hover" : undefined}
       onClick={onClick}
       disabled={disabled || loading}
-      variant="ghost"
       className={cn(
-        "text-muted-foreground cursor-pointer hover:text-foreground hover:bg-muted/50 rounded-lg px-6 py-3 border border-transparent hover:border-primary/50 hover:shadow-[0_0_10px_rgba(118,186,75,0.2)] transition-all duration-300",
+        "text-muted-foreground cursor-pointer flex justify-center items-center hover:text-foreground hover:bg-muted/50 rounded-lg px-6 py-3 border border-transparent hover:border-primary/50 shadow-[0_0_10px_rgba(118,186,75,0.2)] transition-all duration-300",
         className,
       )}
     >
       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
       {!loading && icon && <span className="mr-2">{icon}</span>}
       {title}
-    </MotionButton>
+    </motion.button>
   );
 };
 
@@ -92,14 +88,13 @@ export const DangerButton = ({
   type = "button",
 }: ButtonProps) => {
   return (
-    <MotionButton
+    <motion.button
       type={type}
       variants={buttonVariants}
       whileTap="tap"
       whileHover={!disabled && !loading ? "hover" : undefined}
       onClick={onClick}
       disabled={disabled || loading}
-      variant="destructive"
       className={cn(
         "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg shadow-sm px-6 py-3",
         className,
@@ -108,6 +103,6 @@ export const DangerButton = ({
       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
       {!loading && icon && <span className="mr-2">{icon}</span>}
       {title}
-    </MotionButton>
+    </motion.button>
   );
 };

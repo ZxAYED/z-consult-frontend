@@ -3,8 +3,12 @@
 import { PrimaryButton } from "@/components/shared/buttons";
 import { PasswordField, TextField } from "@/components/shared/inputs";
 import { Form } from "@/components/ui/form";
+import { authService } from "@/lib/services/auth.service";
+import { useAuth } from "@/providers/auth-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -24,6 +28,10 @@ const registerSchema = z
 type RegisterValues = z.infer<typeof registerSchema>;
 
 export const RegisterForm = () => {
+  const router = useRouter();
+  const { refreshUser } = useAuth();
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -34,10 +42,27 @@ export const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (data: RegisterValues) => {
-    // UI Only: Mock submit
-    console.log("Register submitted:", data);
-    toast.success("UI only: Register submitted successfully");
+  const onSubmit = async (data: RegisterValues) => {
+    setLoading(true);
+    try {
+      const response = await authService.register({
+        email: data.email,
+        password: data.password,
+        name: data.fullName,
+        confirmPassword: data.confirmPassword,
+      });
+      if (response.success) {
+        toast.success("Registration successful");
+        refreshUser();
+        router.push("/dashboard");
+      } else {
+        toast.error(response.message || "Registration failed");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,24 +74,28 @@ export const RegisterForm = () => {
             name="fullName"
             label="Full Name"
             placeholder="Dr. John Doe"
+            disabled={loading}
           />
           <TextField
             control={form.control}
             name="email"
             label="Email Address"
             placeholder="john@example.com"
+            disabled={loading}
           />
           <PasswordField
             control={form.control}
             name="password"
             label="Password"
             placeholder="••••••••"
+            disabled={loading}
           />
           <PasswordField
             control={form.control}
             name="confirmPassword"
             label="Confirm Password"
             placeholder="••••••••"
+            disabled={loading}
           />
         </div>
 
@@ -76,6 +105,7 @@ export const RegisterForm = () => {
             title="Create Account"
             className="w-full"
             icon={<UserPlus className="w-4 h-4" />}
+            loading={loading}
           />
         </div>
       </form>
