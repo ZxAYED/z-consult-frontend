@@ -25,7 +25,6 @@ export interface RegisterCredentials {
     email: string;
     password: string;
     name?: string;
-    confirmPassword?: string;
 }
 
 export interface RefreshTokenResponse {

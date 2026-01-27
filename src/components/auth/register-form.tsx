@@ -50,7 +50,6 @@ export const RegisterForm = () => {
         email: data.email,
         password: data.password,
         name: data.fullName,
-        confirmPassword: data.confirmPassword,
       });
       if (response.success) {
         toast.success("Registration successful");
