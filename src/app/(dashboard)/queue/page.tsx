@@ -4,6 +4,8 @@ import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
 import QueueClient from "./client";
 
+export const dynamic = "force-dynamic";
+
 async function getQueueData() {
   try {
     const res = await apiServer<QueueResponse>(

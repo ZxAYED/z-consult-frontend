@@ -5,6 +5,8 @@ import { Loader2 } from "lucide-react";
 import { Suspense } from "react";
 import DashboardClient from "./client";
 
+export const dynamic = "force-dynamic";
+
 async function getDashboardSummary() {
   const today = format(new Date(), "yyyy-MM-dd");
   try {
