@@ -38,7 +38,7 @@ export const PrimaryButton = ({
       onClick={onClick}
       disabled={disabled || loading}
       className={cn(
-        "bg-primary hover:bg-primary/90 text-white  shadow-sm hover:shadow-md transition-all px-6 cursor-pointer py-3 flex justify-center items-center font-medium rounded-lg",
+        "bg-primary hover:bg-primary/90 text-white  shadow-sm hover:shadow-md transition-all px-6 cursor-pointer py-3 text-sm md:text-md flex justify-center items-center font-medium rounded-lg",
         className,
       )}
     >
@@ -67,7 +67,7 @@ export const GhostButton = ({
       onClick={onClick}
       disabled={disabled || loading}
       className={cn(
-        "text-muted-foreground cursor-pointer flex justify-center items-center hover:text-foreground hover:bg-muted/50 rounded-lg px-6 py-3 border border-transparent hover:border-primary/50 shadow-[0_0_10px_rgba(118,186,75,0.2)] transition-all duration-300",
+        "text-muted-foreground cursor-pointer flex justify-center items-center hover:text-foreground hover:bg-muted/50 rounded-lg px-6 py-3 text-sm, md:text-md border border-transparent hover:border-primary/50 shadow-[0_0_10px_rgba(118,186,75,0.2)] transition-all duration-300",
         className,
       )}
     >
@@ -96,7 +96,7 @@ export const DangerButton = ({
       onClick={onClick}
       disabled={disabled || loading}
       className={cn(
-        "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg shadow-sm px-6 py-3",
+        "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg shadow-sm px-6 py-3 text-sm, md:text-md",
         className,
       )}
     >

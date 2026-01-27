@@ -178,15 +178,66 @@ export default function ServicesClient({ initialData }: ServicesClientProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Services</h2>
-        <PrimaryActionButton onClick={openCreateDialog}>
+        <PrimaryActionButton onClick={openCreateDialog} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" /> Add Service
         </PrimaryActionButton>
       </div>
 
-      <div className="rounded-2xl border border-white/70 bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.25)] overflow-hidden">
-        <Table className="border-separate border-spacing-0 [&_th]:border-r-0 [&_td]:border-r-0">
+      <div className="sm:hidden space-y-3">
+        {isLoading ? (
+          <div className="rounded-2xl bg-white/70 p-6 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+          </div>
+        ) : services.length === 0 ? (
+          <div className="rounded-2xl bg-white/70 p-6 text-center text-muted-foreground">
+            No services found
+          </div>
+        ) : (
+          services.map((s) => (
+            <div
+              key={s.id}
+              className="rounded-2xl bg-white/80 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.2)] p-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">{s.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {s.durationMinutes} mins
+                  </p>
+                </div>
+                <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                  {s.requiredStaffType}
+                </span>
+              </div>
+              <div className="mt-4 flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleEdit(s)}
+                  className="rounded-full bg-white/70 px-3 text-muted-foreground hover:text-primary shadow-sm"
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDeletingServiceId(s.id)}
+                  className="rounded-full bg-white/70 px-3 text-muted-foreground hover:text-red-600 shadow-sm"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="hidden sm:block rounded-2xl border border-white/70 bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.25)] overflow-hidden">
+        <Table className="min-w-[640px] border-separate border-spacing-0 [&_th]:border-r-0 [&_td]:border-r-0">
           <TableHeader>
             <TableRow className="bg-white/80 h-12">
               <TableHead className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">
@@ -264,17 +315,17 @@ export default function ServicesClient({ initialData }: ServicesClientProps) {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-2 py-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
           disabled={currentPage === 1 || isLoading}
-          className="cursor-pointer"
+          className="cursor-pointer w-full sm:w-auto"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <div className="text-sm font-medium">
+        <div className="text-sm font-medium text-center sm:text-left">
           Page {currentPage} of {totalPages}
         </div>
         <Button
@@ -284,7 +335,7 @@ export default function ServicesClient({ initialData }: ServicesClientProps) {
             handlePageChange(Math.min(currentPage + 1, totalPages))
           }
           disabled={currentPage === totalPages || isLoading}
-          className="cursor-pointer"
+          className="cursor-pointer w-full sm:w-auto"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>

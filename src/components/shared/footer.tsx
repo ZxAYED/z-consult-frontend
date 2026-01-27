@@ -2,7 +2,7 @@ import Wrapper from "./Wrapper";
 
 export const Footer = () => {
   return (
-    <footer className="relative z-10 py-8 border-t border-border/40 mt-auto bg-white/30 backdrop-blur-sm">
+    <footer className="relative z-10 py-8 mt-auto bg-white/30 backdrop-blur-sm">
       <Wrapper>
         <div className="flex flex-col items-center gap-2">
           <p className="text-sm text-muted-foreground">

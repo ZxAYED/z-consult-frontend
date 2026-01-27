@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const Navbar = () => {
   return (
-    <header className="relative z-10 w-full py-6 border-b border-border/10 bg-white/50 backdrop-blur-sm">
+    <header className="relative z-10 w-full py-6 bg-white/50 backdrop-blur-sm">
       <Wrapper className="flex items-center justify-between">
         <Link href="/">
           <Logo />

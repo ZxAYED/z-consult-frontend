@@ -1,6 +1,7 @@
 "use client";
 
 import { GlassPanel } from "@/components/shared/glass";
+import { cn } from "@/lib/utils";
 import { DashboardSummary } from "@/types/dashboard";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -13,7 +14,6 @@ import {
   ListOrdered,
   Users,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const container = {
   hidden: { opacity: 0 },
@@ -90,17 +90,23 @@ export default function DashboardClient({ data }: DashboardClientProps) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-        <GlassPanel className="col-span-4 p-6" variant="soft">
+        <GlassPanel
+          className="md:col-span-2 lg:col-span-4 p-6 border-0 bg-white/80 shadow-[0_22px_50px_-40px_rgba(15,23,42,0.25)] backdrop-blur-sm"
+          variant="soft"
+        >
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-semibold text-lg flex items-center gap-2">
               <Clock className="h-5 w-5 text-muted-foreground" />
               Latest Activity
             </h3>
           </div>
-          <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-3 pr-2 custom-scrollbar">
             {data.latestActivityLogs.length > 0 ? (
               data.latestActivityLogs.map((log) => (
-                <div key={log.id} className="flex items-start gap-4 group">
+                <div
+                  key={log.id}
+                  className="flex items-start gap-4 rounded-xl px-3 py-2 transition-colors hover:bg-white/60 group"
+                >
                   <div className="w-2 h-2 mt-2 rounded-full bg-primary/50 group-hover:bg-primary transition-colors shrink-0" />
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium leading-none text-foreground/90">
@@ -110,7 +116,7 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                       {log.message}
                     </p>
                   </div>
-                  <div className="text-xs text-muted-foreground font-medium whitespace-nowrap bg-muted/50 px-2 py-1 rounded-md">
+                  <div className="text-[11px] font-semibold whitespace-nowrap bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 px-2.5 py-1 rounded-full">
                     {format(new Date(log.createdAt), "h:mm a")}
                   </div>
                 </div>
@@ -120,11 +126,13 @@ export default function DashboardClient({ data }: DashboardClientProps) {
                 No recent activity
               </p>
             )}
-              
           </div>
         </GlassPanel>
 
-        <GlassPanel className="col-span-3 p-6" variant="soft">
+        <GlassPanel
+          className="md:col-span-2 lg:col-span-3 p-6 border-0 bg-white/80 shadow-[0_22px_50px_-40px_rgba(15,23,42,0.25)] backdrop-blur-sm"
+          variant="soft"
+        >
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-semibold text-lg">Staff Load</h3>
           </div>
@@ -160,12 +168,15 @@ function StatCard({
   return (
     <motion.div variants={item}>
       <GlassPanel
-        className="p-6 hover:shadow-md transition-shadow cursor-default relative overflow-hidden group"
+        className="p-6 border-0 bg-white/80 shadow-[0_22px_50px_-40px_rgba(15,23,42,0.25)] backdrop-blur-sm transition-shadow cursor-default relative overflow-hidden group"
         variant="soft"
       >
+        <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-          <div className="p-2 bg-primary/10 rounded-lg group-hover:scale-110 transition-transform duration-300">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            {title}
+          </h3>
+          <div className="p-2 bg-primary/10 rounded-full group-hover:scale-110 transition-transform duration-300">
             {icon}
           </div>
         </div>
@@ -175,7 +186,7 @@ function StatCard({
             {subtitle}
           </p>
         </div>
-        <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
+        <div className="absolute -bottom-6 -right-6 w-28 h-28 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
       </GlassPanel>
     </motion.div>
   );
@@ -196,16 +207,16 @@ function StaffLoadItem({
 }) {
   const percentage = max > 0 ? (count / max) * 100 : 0;
 
-  let statusColor = "bg-blue-100 text-blue-700";
-  if (status === "ON_LEAVE") statusColor = "bg-red-100 text-red-700";
-  if (status === "AVAILABLE") statusColor = "bg-green-100 text-green-700";
-  if (status === "BUSY") statusColor = "bg-orange-100 text-orange-700";
+  let statusColor = "bg-emerald-50 text-emerald-700";
+  if (status === "ON_LEAVE") statusColor = "bg-lime-50 text-lime-700";
+  if (status === "AVAILABLE") statusColor = "bg-emerald-50 text-emerald-700";
+  if (status === "BUSY") statusColor = "bg-green-50 text-green-700";
 
   const displayStatus = status.replace("_", " ");
 
   return (
     <div className="flex items-center gap-4">
-      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm shrink-0">
         {name[0]}
       </div>
       <div className="flex-1 space-y-1.5 min-w-0">
@@ -223,11 +234,11 @@ function StaffLoadItem({
             {displayStatus}
           </span>
         </div>
-        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+        <div className="h-1.5 w-full bg-emerald-100/70 rounded-full overflow-hidden">
           <div
             className={cn(
               "h-full rounded-full transition-all duration-500",
-              status === "ON_LEAVE" ? "bg-red-400" : "bg-primary",
+              status === "ON_LEAVE" ? "bg-lime-400" : "bg-emerald-500",
             )}
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />

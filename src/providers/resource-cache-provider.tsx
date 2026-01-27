@@ -4,8 +4,14 @@ import { serviceService } from "@/lib/services/service.service";
 import { staffService } from "@/lib/services/staff.service";
 import { Service } from "@/types/service";
 import { Staff } from "@/types/staff";
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
-import { toast } from "sonner";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface ResourceCacheContextType {
   services: Service[];
@@ -16,7 +22,9 @@ interface ResourceCacheContextType {
   refreshStaff: () => Promise<void>;
 }
 
-const ResourceCacheContext = createContext<ResourceCacheContextType | undefined>(undefined);
+const ResourceCacheContext = createContext<
+  ResourceCacheContextType | undefined
+>(undefined);
 
 export function ResourceCacheProvider({ children }: { children: ReactNode }) {
   const [services, setServices] = useState<Service[]>([]);
@@ -89,7 +97,9 @@ export function ResourceCacheProvider({ children }: { children: ReactNode }) {
 export function useResourceCache() {
   const context = useContext(ResourceCacheContext);
   if (context === undefined) {
-    throw new Error("useResourceCache must be used within a ResourceCacheProvider");
+    throw new Error(
+      "useResourceCache must be used within a ResourceCacheProvider",
+    );
   }
   return context;
 }

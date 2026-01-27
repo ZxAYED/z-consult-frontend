@@ -285,13 +285,13 @@ export default function AppointmentsClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Appointments</h2>
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="cursor-pointer"
+            className="cursor-pointer w-full sm:w-auto"
           >
             <Filter className="mr-2 h-4 w-4" /> Filter
           </Button>
@@ -305,7 +305,7 @@ export default function AppointmentsClient({
       </div>
 
       {showFilters && (
-        <div className="rounded-2xl border border-white/70 bg-white/70 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.25)] p-4 w-fit max-w-full inline-flex">
+        <div className="rounded-2xl border border-white/70 bg-white/70 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.25)] p-4 w-full sm:w-fit max-w-full">
           <div className="flex flex-wrap items-end gap-4">
             <div className="space-y-2">
               <Label className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -317,7 +317,7 @@ export default function AppointmentsClient({
                   placeholder="Customer name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 h-10 w-[200px] rounded-xl border-border/60 bg-white/80 focus-visible:ring-1 focus-visible:ring-primary/20"
+                  className="pl-9 h-10 w-full sm:w-[200px] rounded-xl border-border/60 bg-white/80 focus-visible:ring-1 focus-visible:ring-primary/20"
                 />
               </div>
             </div>
@@ -329,7 +329,7 @@ export default function AppointmentsClient({
                 value={filterStatus}
                 onValueChange={(v: any) => setFilterStatus(v)}
               >
-                <SelectTrigger className="cursor-pointer h-10 w-[150px] rounded-xl border-border/60 bg-white/80">
+                <SelectTrigger className="cursor-pointer h-10 w-full sm:w-[150px] rounded-xl border-border/60 bg-white/80">
                   <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent className="z-[200] border-none bg-white">
@@ -353,9 +353,9 @@ export default function AppointmentsClient({
                 Staff
               </Label>
               <Select value={filterStaffId} onValueChange={setFilterStaffId}>
-                <SelectTrigger className="cursor-pointer h-10 w-[170px] rounded-xl border-border/60 bg-white/80">
-                  <SelectValue placeholder="All Staff" />
-                </SelectTrigger>
+              <SelectTrigger className="cursor-pointer h-10 w-full sm:w-[170px] rounded-xl border-border/60 bg-white/80">
+                <SelectValue placeholder="All Staff" />
+              </SelectTrigger>
                 <SelectContent className="z-[200] border-none bg-white">
                   <SelectItem value="all" className="cursor-pointer">
                     All Staff
@@ -372,7 +372,7 @@ export default function AppointmentsClient({
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-end justify-end">
+            <div className="flex items-end justify-end w-full sm:w-auto">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -390,8 +390,101 @@ export default function AppointmentsClient({
         </div>
       )}
 
-      <div className="rounded-2xl border border-white/70 bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.25)] overflow-hidden">
-        <Table className="border-separate border-spacing-0 [&_th]:border-r-0 [&_td]:border-r-0">
+      <div className="sm:hidden space-y-3">
+        {loading ? (
+          <div className="rounded-2xl bg-white/70 p-6 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+          </div>
+        ) : appointments.length === 0 ? (
+          <div className="rounded-2xl bg-white/70 p-6 text-center text-muted-foreground">
+            No appointments found
+          </div>
+        ) : (
+          appointments.map((appt) => (
+            <div
+              key={appt.id}
+              className="rounded-2xl bg-white/80 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.2)] p-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">
+                    {appt.startTime && isValid(new Date(appt.startTime))
+                      ? format(new Date(appt.startTime), "MMM d, yyyy")
+                      : appt.startAt && isValid(new Date(appt.startAt))
+                        ? format(new Date(appt.startAt), "MMM d, yyyy")
+                        : "N/A"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {appt.startTime && isValid(new Date(appt.startTime))
+                      ? format(new Date(appt.startTime), "h:mm a")
+                      : appt.startAt && isValid(new Date(appt.startAt))
+                        ? format(new Date(appt.startAt), "h:mm a")
+                        : ""}
+                  </p>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="px-3 py-1 text-xs font-semibold border-0 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20"
+                >
+                  {appt.status}
+                </Badge>
+              </div>
+              <div className="mt-3 space-y-2 text-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-muted-foreground">Customer</span>
+                  <span className="font-medium text-right">
+                    {appt.customerName || appt.patientName}
+                  </span>
+                </div>
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-muted-foreground">Service</span>
+                  <span className="text-right">
+                    {typeof appt.service === "string"
+                      ? appt.service
+                      : appt.service?.name}
+                  </span>
+                </div>
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-muted-foreground">Staff</span>
+                  <span className="text-right">
+                    {appt.staff?.name || (
+                      <span className="text-muted-foreground italic">
+                        Unassigned
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4 flex gap-2">
+                {appt.status !== AppointmentStatus.CANCELLED &&
+                  appt.status !== AppointmentStatus.COMPLETED && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCancellingId(appt.id)}
+                      className="rounded-full bg-white/70 px-3 text-muted-foreground hover:text-orange-600 shadow-sm"
+                    >
+                      <Ban className="mr-2 h-4 w-4" />
+                      Cancel
+                    </Button>
+                  )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleEditOpen(appt)}
+                  className="rounded-full bg-white/70 px-3 text-muted-foreground hover:text-primary shadow-sm"
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="hidden sm:block rounded-2xl border border-white/70 bg-white/70 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.25)] overflow-hidden">
+        <Table className="min-w-[900px] border-separate border-spacing-0 [&_th]:border-r-0 [&_td]:border-r-0">
           <TableHeader>
             <TableRow className="bg-white/80 h-12">
               <TableHead className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">
@@ -516,7 +609,7 @@ export default function AppointmentsClient({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="text-sm text-muted-foreground">
           Page {page} of {totalPages}
         </div>

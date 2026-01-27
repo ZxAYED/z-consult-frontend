@@ -25,7 +25,7 @@ export default function Home() {
       <Wrapper>
         {/* Main Content */}
         <main className="relative z-10 flex-1">
-          <Wrapper className="py-10 lg:py-14 grid lg:grid-cols-12 gap-10 lg:gap-16 items-start max-w-none ">
+          <div className="py-10 lg:py-14 grid lg:grid-cols-12 gap-10 lg:gap-16 items-start max-w-none ">
             {/* Left Column: Auth Panel */}
             <div className="lg:col-span-5 w-full order-2 lg:order-1">
               <motion.div
@@ -144,7 +144,7 @@ export default function Home() {
                 />
               </div>
             </div>
-          </Wrapper>
+          </div>
         </main>
 
         <Footer />

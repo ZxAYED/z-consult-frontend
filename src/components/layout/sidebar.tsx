@@ -43,12 +43,22 @@ const routes = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+  className?: string;
+}
+
+export function Sidebar({ onNavigate, className }: SidebarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
 
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full  border-r border-white/40 shadow-sm">
+    <div
+      className={cn(
+        "space-y-4 py-4 flex flex-col h-full bg-white backdrop-blur-md shadow-[0_20px_50px_-40px_rgba(15,23,42,0.3)]",
+        className,
+      )}
+    >
       <div className="px-6 py-2 flex-1">
         <Link href="/dashboard" className="flex items-center mb-10">
           <Logo />
@@ -58,11 +68,12 @@ export function Sidebar() {
             <Link
               key={route.href}
               href={route.href}
+              onClick={onNavigate}
               className={cn(
                 "group flex items-center p-3 w-full justify-start font-medium cursor-pointer rounded-xl transition-all duration-200 relative overflow-hidden",
                 pathname === route.href
                   ? "text-primary-foreground shadow-md"
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/40",
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/60",
               )}
             >
               {pathname === route.href && (
@@ -96,7 +107,10 @@ export function Sidebar() {
         <motion.button
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.8 }}
-          onClick={logout}
+          onClick={() => {
+            logout();
+            onNavigate?.();
+          }}
           className="flex items-center p-3 w-full justify-start font-medium cursor-pointer rounded-xl  text-destructive bg-destructive/10 transition-all duration-200"
         >
           <LogOut className="h-5 w-5 mr-3" />
